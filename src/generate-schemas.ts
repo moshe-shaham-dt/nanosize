@@ -42,7 +42,7 @@ export const addLambdaFunctions = async (scope: cdk.Construct, api: RestApi, han
         const params = APIStructure.params[`${func.controller}_${func.controllerMethod}`];
         const lambdaFunc = new NodejsFunction(scope, func.controllerMethod + '-func', {
             memorySize: 128,
-            timeout: cdk.Duration.seconds(5),
+            timeout: cdk.Duration.seconds(90),
             runtime: lambda.Runtime.NODEJS_14_X,
             handler: 'main',
             entry: handlerPath,
@@ -51,6 +51,16 @@ export const addLambdaFunctions = async (scope: cdk.Construct, api: RestApi, han
                 CONTROLLER_METHOD: func.controllerMethod,
                 RESPONSE_MODEL: func.responseModel || '',
                 PARAMETERS: JSON.stringify(params),
+                PGHOST: 'test-db-api.cojczvelvcse.eu-west-1.rds.amazonaws.com',
+                PGUSER: 'postgres',
+                PGPASSWORD: 'halumi52',
+                PGDATABASE: 'test1',
+            },
+            bundling: {
+                // pg-native is not available and won't be used. This is letting the
+                // bundler (esbuild) know pg-native won't be included in the bundled JS
+                // file.
+                externalModules: ['pg-native']
             }
         });
 
