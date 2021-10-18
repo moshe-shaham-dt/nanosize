@@ -1,4 +1,4 @@
-import {APIStructure, Body, Controller, FunctionParam, GET, Model, POST, QueryParameter } from './decorators';
+import {APIStructure, Body, Controller, FunctionParam, GET, Model, POST, QueryParameter, PathParameter } from './decorators';
 import {generateSwaggerUI} from "./generate-schemas";
 import {addLambdaFunctions} from "./add-lambdas";
 
@@ -10,6 +10,7 @@ export {
     GET,
     POST,
     QueryParameter,
+    PathParameter,
     Body,
     Controller,
     Model,

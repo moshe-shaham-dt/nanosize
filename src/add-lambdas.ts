@@ -44,14 +44,14 @@ export const addLambdaFunctions = async (scope: cdk.Construct, api: RestApi, han
             requestTemplates: { "application/json": '{ "statusCode": "200" }' },
         });
 
-        const requestParameters = params.reduce((queryStringDict: any, param: FunctionParam) => {
+        const requestParameters = params?.reduce((queryStringDict: any, param: FunctionParam) => {
             if (param.parameterType === 'QUERY_STRING') {
                 queryStringDict['method.request.querystring.' + param.parameterName] = true;
             }
             return queryStringDict;
         }, {});
 
-        const requestModelName = func.paramsTypes![params.find(item => item.parameterType === 'PAYLOAD')?.argumentIndex!];
+        const requestModelName = params ? func.paramsTypes![params.find(item => item.parameterType === 'PAYLOAD')?.argumentIndex!] : undefined;
 
         const controllerPathParts = APIStructure.controllers[func.controller].split('/').filter(i => i);
         const funcPathParts = func.path.split('/').filter(i => i);

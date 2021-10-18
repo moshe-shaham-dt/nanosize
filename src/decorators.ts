@@ -61,6 +61,16 @@ export const QueryParameter = (name: string) => {
     })
   }
 }
+export const PathParameter = (name: string) => {
+  return (target: Object, propertyKey: string | symbol, parameterIndex: number) => {
+    addParam(`${target.constructor.name}_${String(propertyKey)}`, {
+      argumentIndex: parameterIndex,
+      parameterType: 'PATH',
+      valueType: 'string',
+      parameterName: name
+    })
+  }
+}
 
 const httpMethodDecorator = (method: string, urlPath: string, options?: FunctionOptions) => {
     return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
