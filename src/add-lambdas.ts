@@ -5,6 +5,7 @@ import {APIStructure, FunctionParam} from "./decorators";
 import {NodejsFunction} from "@aws-cdk/aws-lambda-nodejs";
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as apigateway from "@aws-cdk/aws-apigateway";
+import {Config} from "./config";
 
 export const addLambdaFunctions = async (scope: cdk.Construct, api: RestApi, handlerPath: string, auth: CognitoUserPoolsAuthorizer) => {
     const resources: {[key: string]: Resource} = {};
@@ -14,6 +15,7 @@ export const addLambdaFunctions = async (scope: cdk.Construct, api: RestApi, han
         validateRequestBody: true,
         validateRequestParameters: true,
     });
+
     for (const func of APIStructure.functions) {
         const params = APIStructure.params[`${func.controller}_${func.controllerMethod}`];
         const lambdaFunc = new NodejsFunction(scope, func.controllerMethod + '-func', {
@@ -27,10 +29,10 @@ export const addLambdaFunctions = async (scope: cdk.Construct, api: RestApi, han
                 CONTROLLER_METHOD: func.controllerMethod,
                 RESPONSE_MODEL: func.responseModel || '',
                 PARAMETERS: JSON.stringify(params),
-                PGHOST: 'test-db-api.cojczvelvcse.eu-west-1.rds.amazonaws.com',
-                PGUSER: 'postgres',
-                PGPASSWORD: 'halumi52',
-                PGDATABASE: 'test1',
+                DB_HOST: Config.database?.host!,
+                DB_USER: Config.database?.user!,
+                DB_PASSWORD: Config.database?.password!,
+                DB_DATABASE: Config.database?.database!,
             },
             bundling: {
                 // pg-native is not available and won't be used. This is letting the

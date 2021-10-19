@@ -34,7 +34,9 @@
     "cdk-triggers": "0.0.139",
     "glob": "^7.2.0",
     "glob-promise": "^4.2.1",
+    "pg": "^8.7.1",
     "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.2.38",
     "typescript-json-schema": "^0.51.0"
   }
 }

@@ -1,45 +1,59 @@
-import {APIGatewayProxyEventV2, APIGatewayProxyResultV2} from 'aws-lambda';
-import { FunctionParam } from './decorators';
-// import * as handlers from '../src/questions/question.controller';
+import {Connection, createConnection, getConnection} from "typeorm";
+import {APIGatewayProxyEvent} from "aws-lambda";
+import { FunctionParam } from "./decorators";
 
-export async function main(
-  event: APIGatewayProxyEventV2,
-): Promise<APIGatewayProxyResultV2> {
-  console.log(event);
+export const MainHandler = {
+  getDatabaseConnection: async (entities: Function[]): Promise<Connection> => {
+    let conn: Connection;
+    try {
+      console.log("getting connection");
+      conn = getConnection();
+      console.log("typeorm - reusing connection")
+    } catch (e: any) {
+      console.log("typeorm - error getting connection", e?.message);
+      conn = await createConnection({
+        type: "postgres",
+        host: process.env.PGHOST,
+        port: 5432,
+        username: process.env.PGUSER,
+        password: process.env.PGPASSWORD,
+        database: process.env.PGDATABASE,
+        entities,
+        synchronize: true,
+        logging: false
+      });
+    }
+    console.log("got connection", conn.isConnected);
+    return conn;
+  },
 
-  const controllerClass = process.env.CONTROLLER_CLASS!;
-  const controllerMethod = process.env.CONTROLLER_METHOD!;
-
-  const parameters: FunctionParam[] = JSON.parse(process.env.PARAMETERS!);
-  const funcArguments: any[] = [];
-  if (parameters) {
-    parameters.sort((a, b) => a.argumentIndex - b.argumentIndex);
-    console.log(parameters);
-    for (const parameter of parameters) {
-      if (parameter.parameterType === 'QUERY_STRING') {
-        funcArguments.push(event.queryStringParameters![parameter.parameterName!]);
-      } else if (parameter.parameterType === 'PAYLOAD') {
-        funcArguments.push(JSON.parse(event.body!));
+  getFunctionParameters: (event: APIGatewayProxyEvent, getOrCreateUser: Function) => {
+    const funcArguments: any[] = [];
+    if (process.env.PARAMETERS) {
+      const parameters: FunctionParam[] = JSON.parse(process.env.PARAMETERS);
+      if (parameters) {
+        parameters.sort((a, b) => a.argumentIndex - b.argumentIndex);
+        for (const parameter of parameters) {
+          switch (parameter.parameterType) {
+            case 'QUERY_STRING':
+              funcArguments.push(event.queryStringParameters![parameter.parameterName!]);
+              break;
+            case 'PAYLOAD':
+              funcArguments.push(JSON.parse(event.body!));
+              break;
+            case 'PATH':
+              funcArguments.push(event.pathParameters![parameter.parameterName!]);
+              break;
+            case 'USER':
+              funcArguments.push(getOrCreateUser({
+                id: event.requestContext.authorizer?.claims.sub,
+                email: event.requestContext.authorizer?.claims.email,
+              }));
+              break;
+          }
+        }
       }
     }
+    return funcArguments;
   }
-  
-  // const controller = new (<any>handlers)[controllerClass]();
-  // const response = await controller[controllerMethod](...funcArguments);
-
-  const response = {
-    aaa: "how do i get to " + controllerClass
-  }
-
-  // const response = await new QuestionController().getQuestionByID();
-
-  return {
-    body: JSON.stringify(response),
-    statusCode: 200,
-    headers: {
-      "Access-Control-Allow-Origin" : "*", // Required for CORS support to work
-      "Access-Control-Allow-Methods" : "*", // Required for CORS support to work
-      "Access-Control-Allow-Credentials" : true // Required for cookies, authorization headers with HTTPS 
-    },
-  };
 }

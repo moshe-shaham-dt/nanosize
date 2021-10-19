@@ -22,7 +22,7 @@ export class TodoController {
         @Body request: TodoRequest
     ): Promise<TodoResponse> {
         const todo = new Todo();
-        todo.body = todo.body;
+        todo.body = request.body;
         todo.created = new Date();
         await todo.save();
         return todo;
