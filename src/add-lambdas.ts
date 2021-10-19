@@ -1,12 +1,12 @@
 import * as cdk from "@aws-cdk/core";
-import {IResource, Resource, RestApi} from "@aws-cdk/aws-apigateway";
+import {CognitoUserPoolsAuthorizer, IResource, Resource, RestApi} from "@aws-cdk/aws-apigateway";
 import {getApiModels} from "./api-models";
 import {APIStructure, FunctionParam} from "./decorators";
 import {NodejsFunction} from "@aws-cdk/aws-lambda-nodejs";
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as apigateway from "@aws-cdk/aws-apigateway";
 
-export const addLambdaFunctions = async (scope: cdk.Construct, api: RestApi, handlerPath: string) => {
+export const addLambdaFunctions = async (scope: cdk.Construct, api: RestApi, handlerPath: string, auth: CognitoUserPoolsAuthorizer) => {
     const resources: {[key: string]: Resource} = {};
     const apiModels = await getApiModels(api);
     const validator = api.addRequestValidator("validate-request", {
@@ -78,7 +78,9 @@ export const addLambdaFunctions = async (scope: cdk.Construct, api: RestApi, han
                 responseModels: {
                     'application/json': apiModels[func.responseModel!]
                 }
-            }]
+            }],
+            authorizer: auth,
+            authorizationType: apigateway.AuthorizationType.COGNITO,
         });
     }
 }

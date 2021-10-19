@@ -1,7 +1,7 @@
 import "reflect-metadata";
 
 export interface FunctionParam {
-  parameterType: 'QUERY_STRING' | 'PATH' | 'PAYLOAD',
+  parameterType: 'QUERY_STRING' | 'PATH' | 'PAYLOAD' | 'USER',
   valueType: 'string',
   argumentIndex: number;
   parameterName?: string;
@@ -19,6 +19,10 @@ export interface FunctionMetadata {
 }
 export interface FunctionOptions {
   responseModel?: Function;
+}
+export interface IUser {
+  id: string;
+  email: string;
 }
 
 const models: string[] = [];
@@ -43,6 +47,13 @@ const addParam = (func: string, paramDefinition: FunctionParam) => {
     params[func] = [];
   }
   params[func].push(paramDefinition);
+}
+export const User = (target: Object, propertyKey: string | symbol, parameterIndex: number) => {
+  addParam(`${target.constructor.name}_${String(propertyKey)}`, {
+    argumentIndex: parameterIndex,
+    parameterType: 'USER',
+    valueType: 'string'
+  })
 }
 export const Body = (target: Object, propertyKey: string | symbol, parameterIndex: number) => {
   addParam(`${target.constructor.name}_${String(propertyKey)}`, {
