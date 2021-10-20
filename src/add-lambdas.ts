@@ -19,7 +19,7 @@ export const addLambdaFunctions = async (scope: cdk.Construct, api: RestApi, han
     for (const func of APIStructure.functions) {
         const params = APIStructure.params[`${func.controller}_${func.controllerMethod}`];
         const lambdaFunc = new NodejsFunction(scope, func.controllerMethod + '-func', {
-            memorySize: 128,
+            memorySize: 1024,
             timeout: cdk.Duration.seconds(90),
             runtime: lambda.Runtime.NODEJS_14_X,
             handler: 'main',

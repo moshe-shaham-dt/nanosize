@@ -31,13 +31,11 @@ const functions: FunctionMetadata[] = [];
 const params: {[key: string]: FunctionParam[]} = {}
 
 export const Model = (constructor: Function) => {
-    console.log("model running", constructor.name);
     models.push(constructor.name);
 }
 
 export const Controller = (urlPath: string) => {
   return (constructor: Function) => {
-    console.log("controller running", urlPath, constructor.name);
     controllers[constructor.name] = urlPath;
   }
 }
@@ -102,6 +100,12 @@ export const GET = (urlPath: string, options?: FunctionOptions) => {
 }
 export const POST = (urlPath: string, options?: FunctionOptions) => {
   return httpMethodDecorator('POST', urlPath, options)
+}
+export const PUT = (urlPath: string, options?: FunctionOptions) => {
+  return httpMethodDecorator('PUT', urlPath, options)
+}
+export const DELETE = (urlPath: string, options?: FunctionOptions) => {
+  return httpMethodDecorator('DELETE', urlPath, options)
 }
 
 export const APIStructure = {
