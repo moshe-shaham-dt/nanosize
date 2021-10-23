@@ -19,7 +19,7 @@ import {getApiModels} from "./api-models";
 export const modelSchemas: {[key: string]: Promise<any>} = {};
 
 const generatePromise = new Promise<TJS.Program>(async (resolve, reject) => {
-    const files = await glob('src/**/*.ts');
+    const files = await glob('src/**/*.model.ts');
     const program = TJS.getProgramFromFiles(
         files,
         {
@@ -33,6 +33,7 @@ const generatePromise = new Promise<TJS.Program>(async (resolve, reject) => {
 export const getSchemas = async () => {
     const program = await generatePromise;
     const resolvedSchemas: {[key: string]: any} = {};
+    console.log(APIStructure.models);
     for (const model of APIStructure.models) {
         resolvedSchemas[model] = TJS.generateSchema(program, model, {
             required: true

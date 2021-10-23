@@ -1,10 +1,14 @@
 {
   "name": "nanosize",
-  "version": "0.1.0-6",
-  "description": "",
+  "version": "0.1.0-9",
+  "description": "Minimal CDK + Lambda API in Typescript",
   "main": "./lib/index.js",
   "bin": {
     "nanosize": "./lib/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moshe-shaham-dt/nanosize"
   },
   "files": [
     "lib/",
@@ -18,7 +22,7 @@
     "tsc": "tsc -p tsconfig.json",
     "nanosize": "nanosize"
   },
-  "author": "",
+  "author": "Moshe Shaham",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "10.17.27",

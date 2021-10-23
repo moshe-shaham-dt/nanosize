@@ -27,7 +27,7 @@ export const MainHandler = {
     return conn;
   },
 
-  getFunctionParameters: (event: APIGatewayProxyEvent, getOrCreateUser: Function) => {
+  getFunctionParameters: async (event: APIGatewayProxyEvent, getOrCreateUser: Function) => {
     const funcArguments: any[] = [];
     if (process.env.PARAMETERS) {
       const parameters: FunctionParam[] = JSON.parse(process.env.PARAMETERS);
@@ -45,7 +45,7 @@ export const MainHandler = {
               funcArguments.push(event.pathParameters![parameter.parameterName!]);
               break;
             case 'USER':
-              funcArguments.push(getOrCreateUser({
+              funcArguments.push(await getOrCreateUser({
                 id: event.requestContext.authorizer?.claims.sub,
                 email: event.requestContext.authorizer?.claims.email,
               }));
