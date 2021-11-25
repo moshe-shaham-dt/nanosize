@@ -48,6 +48,8 @@ export const MainHandler = {
               funcArguments.push(await getOrCreateUser({
                 id: event.requestContext.authorizer?.claims.sub,
                 email: event.requestContext.authorizer?.claims.email,
+                firstName: event.requestContext.authorizer?.claims.given_name,
+                lastName: event.requestContext.authorizer?.claims.family_name,
               }));
               break;
           }

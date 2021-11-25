@@ -69,7 +69,6 @@ export const addLambdaFunctions = async (scope: cdk.Construct, api: RestApi, han
             currentResource = resources[currentPath];
         }
 
-        console.log("check", func, requestModelName, requestParameters, func.responseModel);
         currentResource.addMethod(func.method, getQuestionsIntegration, {
             requestModels: requestModelName ? {
                 'application/json': apiModels[requestModelName]

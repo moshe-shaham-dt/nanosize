@@ -23,6 +23,8 @@ export interface FunctionOptions {
 export interface IUser {
   id: string;
   email: string;
+  firstName: string;
+  lastName: string;
 }
 
 const models: string[] = [];
