@@ -25,6 +25,7 @@ export interface IUser {
   email: string;
   firstName: string;
   lastName: string;
+  groups: string;
 }
 
 const models: string[] = [];

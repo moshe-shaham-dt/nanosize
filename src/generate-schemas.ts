@@ -14,7 +14,6 @@ import * as origins from '@aws-cdk/aws-cloudfront-origins';
 import * as triggers from 'cdk-triggers';
 import * as iam from '@aws-cdk/aws-iam';
 import {APIStructure, FunctionParam} from "./index";
-import {getApiModels} from "./api-models";
 
 export const modelSchemas: {[key: string]: Promise<any>} = {};
 
@@ -33,13 +32,19 @@ const generatePromise = new Promise<TJS.Program>(async (resolve, reject) => {
 export const getSchemas = async () => {
     const program = await generatePromise;
     const resolvedSchemas: {[key: string]: any} = {};
-    console.log(APIStructure.models);
     for (const model of APIStructure.models) {
         resolvedSchemas[model] = TJS.generateSchema(program, model, {
             required: true
         });
     }
     return resolvedSchemas;
+}
+
+export const getSingleSchema = async (model: string) => {
+    const program = await generatePromise;
+    return TJS.generateSchema(program, model, {
+        required: true
+    });
 }
 
 

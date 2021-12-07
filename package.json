@@ -1,6 +1,6 @@
 {
   "name": "nanosize",
-  "version": "0.1.0-10",
+  "version": "0.1.0-11",
   "description": "Minimal CDK + Lambda API in Typescript",
   "main": "./lib/index.js",
   "bin": {
