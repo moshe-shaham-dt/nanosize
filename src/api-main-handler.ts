@@ -50,7 +50,8 @@ export const MainHandler = {
                 email: event.requestContext.authorizer?.claims.email,
                 firstName: event.requestContext.authorizer?.claims.given_name,
                 lastName: event.requestContext.authorizer?.claims.family_name,
-                groups: event.requestContext.authorizer?.claims['cognito:groups']
+                groups: event.requestContext.authorizer?.claims['cognito:groups'],
+                picture: event.requestContext.authorizer?.claims.picture ? JSON.parse(event.requestContext.authorizer?.claims.picture)['data']['url'] : null,
               }));
               break;
           }

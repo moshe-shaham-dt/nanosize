@@ -2,12 +2,13 @@ import * as cdk from "@aws-cdk/core";
 import {CognitoUserPoolsAuthorizer, IResource, Resource, RestApi} from "@aws-cdk/aws-apigateway";
 import {getApiModels} from "./api-models";
 import {APIStructure, FunctionParam} from "./decorators";
-import {NodejsFunction} from "@aws-cdk/aws-lambda-nodejs";
+import {NodejsFunction, NodejsFunctionProps} from "@aws-cdk/aws-lambda-nodejs";
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as apigateway from "@aws-cdk/aws-apigateway";
 import {Config} from "./config";
 
-export const addLambdaFunctions = async (scope: cdk.Construct, api: RestApi, handlerPath: string, auth: CognitoUserPoolsAuthorizer) => {
+export const addLambdaFunctions = async (scope: cdk.Construct, api: RestApi, handlerPath: string, auth: CognitoUserPoolsAuthorizer,
+                                         lambdaOptions: Partial<NodejsFunctionProps>) => {
     const resources: {[key: string]: Resource} = {};
     const apiModels = await getApiModels(api);
     const validator = api.addRequestValidator("validate-request", {
@@ -19,7 +20,7 @@ export const addLambdaFunctions = async (scope: cdk.Construct, api: RestApi, han
     for (const func of APIStructure.functions) {
         const params = APIStructure.params[`${func.controller}_${func.controllerMethod}`];
         const lambdaFunc = new NodejsFunction(scope, func.controllerMethod + '-func', {
-            memorySize: 1024,
+            memorySize: 256,
             timeout: cdk.Duration.seconds(90),
             runtime: lambda.Runtime.NODEJS_14_X,
             handler: 'main',
@@ -39,7 +40,8 @@ export const addLambdaFunctions = async (scope: cdk.Construct, api: RestApi, han
                 // bundler (esbuild) know pg-native won't be included in the bundled JS
                 // file.
                 externalModules: ['pg-native']
-            }
+            },
+            ...lambdaOptions,
         });
 
         const getQuestionsIntegration = new apigateway.LambdaIntegration(lambdaFunc, {
